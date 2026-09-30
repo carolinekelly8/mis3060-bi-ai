@@ -38,12 +38,18 @@ Script: `hw03/yf_check.py` (yfinance `quarterly_income_stmt`, most recent quarte
 
 | Metric | From 8-K text extraction | From yfinance | Match? |
 |---|---|---|---|
-| Revenue | $90.0 billion | FILL_IN | FILL_IN |
-| Net Income | $35.8 billion | FILL_IN | FILL_IN |
+| Revenue | $90.0 billion | $90,007,000,000 ($90.0 billion) | Yes |
+| Net Income | $35.8 billion | $35,766,000,000 ($35.8 billion) | Yes |
 
-Explanation: MSFT most recent quarter ended: 2026-06-30
+yfinance output (most recent quarter ended 2026-06-30):
+
+```
+MSFT most recent quarter ended: 2026-06-30
 Total Revenue: $90,007,000,000  (= $90.0 billion)
 Net Income:    $35,766,000,000  (= $35.8 billion)
+```
+
+Explanation: Both sources agree for the quarter ended June 30, 2026. yfinance reports exact dollar amounts, while the press release states figures rounded to one decimal in billions. After rounding, the values are identical, so there is no period mismatch, definition difference or extraction error.
 
 ## 5D — Pipeline Integrity Checks
 
