@@ -1,0 +1,21 @@
+company,ticker,cik,filing_date,period,revenue_reported,eps_diluted,net_income,revenue_unit,net_income_unit
+Apple Inc.,AAPL,0000320193,2026-07-30,fiscal 2026 third quarter,109.4,2.02,29789,billion,million
+Apple Inc.,AAPL,0000320193,2026-04-30,fiscal 2026 second quarter,111.2,2.01,29578,billion,million
+Apple Inc.,AAPL,0000320193,2026-01-29,fiscal 2026 first quarter,143.8,2.84,42097,billion,million
+Apple Inc.,AAPL,0000320193,2025-10-30,fiscal 2025 fourth quarter,102.5,1.85,27466,billion,million
+Microsoft Corporation,MSFT,0000789019,2026-07-29,"quarter ended june 30, 2026",90.0,4.81,35.8,billion,billion
+Microsoft Corporation,MSFT,0000789019,2026-04-29,"quarter ended march 31, 2026",82.9,4.27,31.8,billion,billion
+Microsoft Corporation,MSFT,0000789019,2026-01-28,"quarter ended december 31, 2025",81.3,5.16,38.5,billion,billion
+Microsoft Corporation,MSFT,0000789019,2025-10-29,"quarter ended september 30, 2025",77.7,3.72,27.7,billion,billion
+NVIDIA Corporation,NVDA,0001045810,2026-08-26,second quarter fiscal 2027,96.2,2.46,59688,billion,million
+NVIDIA Corporation,NVDA,0001045810,2026-05-20,first quarter fiscal 2027,81.6,2.39,58321,billion,million
+NVIDIA Corporation,NVDA,0001045810,2026-02-25,fourth quarter and fiscal 2026,68.1,1.76,42960,billion,million
+NVIDIA Corporation,NVDA,0001045810,2025-11-19,third quarter fiscal 2026,57.0,1.30,31910,billion,million
+JPMorgan Chase & Co.,JPM,0000019617,2026-07-14,second quarter 2026,57.3,7.70,21.2,billion,billion
+JPMorgan Chase & Co.,JPM,0000019617,2026-04-14,first quarter 2026,49.8,5.94,16.5,billion,billion
+JPMorgan Chase & Co.,JPM,0000019617,2026-01-13,fourth quarter 2025,45.8,4.63,13.0,billion,billion
+JPMorgan Chase & Co.,JPM,0000019617,2025-10-14,third quarter 2025,46.4,5.07,14.4,billion,billion
+Walmart Inc.,WMT,0000104169,2026-08-20,second quarter,187.9,0.80,6366,billion,million
+Walmart Inc.,WMT,0000104169,2026-05-21,first quarter,177.8,0.67,5330,billion,million
+Walmart Inc.,WMT,0000104169,2026-02-19,fourth quarter,190.7,0.53,4237,billion,million
+Walmart Inc.,WMT,0000104169,2025-11-20,third quarter,179.5,0.77,6143,billion,million
