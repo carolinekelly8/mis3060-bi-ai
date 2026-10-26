@@ -1,0 +1,23 @@
+table,issue,action,rows_affected,note
+fact_transactions,#8 security_id stored as float text,convert to integer text,197175,"before: 197,175 '.0' values; after: 0; all non-blank ids now match dim_security"
+fact_portfolio_snapshot,#11 return_ytd stored as percent text,replace with benchmark_return_ytd + active_alpha_ytd (full precision),300,verified: all 300 % values agree with benchmark + alpha within rounding (max diff 5.0e-05); after: alpha = return - benchmark holds for all 300 rows to 1e-6
+dim_client,#1 state spelled out instead of USPS code,standardise,78,before: 27 distinct values; after: 20
+dim_date,#22 NYSE holidays marked as trading days,set is_trading_day = 0,47,"before: 1,305 trading days; after: 1,258 (all 47 NYSE full-day closures 2020-2024)"
+dim_client,#3 near-duplicate client records,quarantine,25,"before: 2,525 rows; after: 2,500; none referenced by any fact table"
+dim_client,#2 blank risk_profile,leave blank + flag_risk_profile_missing=1,75,"75 of 75 blank clients are on benchmark 3 vs 31% of known clients Balanced (chance ~1e-38): benchmark 3 is a default, not proof, so no fill"
+fact_transactions,#10 negative shares on Buy,flip sign (reconciled),836,before: 836 rows with shares x price != amount; after: 0
+fact_transactions,#9 orphan client_id,quarantine,200,"before: 298,772; after: 298,572; 200 distinct client_ids, range 2702-3192"
+fact_portfolio_snapshot,#12 return_ytd > +100% or < -50%,flag_return_implausible=1,2639,"values kept; return_ytd = AUM / prior Dec AUM - 1, so cash flows distort it"
+fact_portfolio_snapshot,"#13 aum exactly 1,000.00",flag_aum_floor=1,420,"92 clients; looks like a system floor, true value unknown"
+fact_transactions,#15 Buy/Sell dated on a non-trading day,flag_non_trading_day=1,44241,"40,630 weekends + 3,611 NYSE holidays (uses corrected dim_date from #22); likely booking date, true trade date unknown"
+fact_transactions,#16 inactive client transacting after final snapshot,flag_after_last_snapshot=1,2410,kept: could be closing trades/transfers out
+dim_advisor,#4 certifications = 'None' means no certification (legitimate value),leave as is,6,rows_affected = evidence count; nothing changed. See decision_log.md
+dim_security,#5 sector blank for ETFs (legitimate structure),leave as is,219,rows_affected = evidence count; nothing changed. See decision_log.md
+dim_security,#6 expense_ratio blank for stocks (legitimate structure),leave as is,281,rows_affected = evidence count; nothing changed. See decision_log.md
+dim_security,#7 duplicate security names with different tickers (legitimate),leave as is,6,rows_affected = evidence count; nothing changed. See decision_log.md
+fact_portfolio_snapshot,#14 snapshot months with no fee row,leave as is,7350,rows_affected = evidence count; nothing changed. See decision_log.md
+fact_transactions,#17 Advisory Fee transactions do not reconcile to fact_fees,leave as is,35742,rows_affected = evidence count; nothing changed. See decision_log.md
+fact_fees,#18 bps_charged above 100; amount reconciles,leave as is,1,rows_affected = evidence count; nothing changed. See decision_log.md
+fact_transactions,#19 security_id/shares/price blank on cash transactions (legitimate),leave as is,101528,rows_affected = evidence count; nothing changed. See decision_log.md
+fact_fees,#20 fee_type changes month to month for the same client,leave as is,2500,rows_affected = evidence count; nothing changed. See decision_log.md
+dim_benchmark,#21 benchmark referenced by no security or snapshot,leave as is,1,rows_affected = evidence count; nothing changed. See decision_log.md
