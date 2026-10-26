@@ -1,0 +1,135 @@
+stage,table,check_type,check,rows_checked,rows_failing,pass_rate
+raw,dim_advisor,business rule: hard rule,years_experience 0-50,25,0,1.0
+raw,dim_advisor,business rule: hard rule,aum_target_mm > 0,25,0,1.0
+raw,dim_advisor,business rule: hard rule,region in list,25,0,1.0
+raw,dim_benchmark,business rule: hard rule,name and ticker_proxy present,8,0,1.0
+raw,dim_benchmark,business rule: hard rule,ticker_proxy unique,8,0,1.0
+raw,dim_client,business rule: hard rule,state is USPS code,2525,78,0.969109
+raw,dim_client,business rule: hard rule,zip 5 digits,2525,0,1.0
+raw,dim_client,business rule: hard rule,age 18-100,2525,0,1.0
+raw,dim_client,business rule: hard rule,risk_profile in list (or blank),2525,0,1.0
+raw,dim_client,business rule: known issue (flagged and kept),risk_profile present,2525,76,0.969901
+raw,dim_client,business rule: hard rule,client_tier in list,2525,0,1.0
+raw,dim_client,business rule: hard rule,primary_account_type in list,2525,0,1.0
+raw,dim_client,business rule: hard rule,is_active True/False,2525,0,1.0
+raw,dim_client,business rule: hard rule,client_since 2000-01-01 to 2024-12-31,2525,0,1.0
+raw,dim_client,business rule: hard rule,initial_aum > 0,2525,0,1.0
+raw,dim_client,business rule: hard rule,tier matches AUM band,2525,0,1.0
+raw,dim_date,business rule: hard rule,date parses,1827,0,1.0
+raw,dim_date,business rule: hard rule,calendar fields agree with date,1827,0,1.0
+raw,dim_date,business rule: hard rule,month/quarter/year-end flags agree with date,1827,0,1.0
+raw,dim_date,business rule: hard rule,weekend not trading day,1827,0,1.0
+raw,dim_date,business rule: hard rule,NYSE holiday not trading day,1827,47,0.974275
+raw,dim_security,business rule: hard rule,asset_class in list,500,0,1.0
+raw,dim_security,business rule: hard rule,is_etf True/False,500,0,1.0
+raw,dim_security,business rule: hard rule,ticker unique,500,0,1.0
+raw,dim_security,business rule: hard rule,expense_ratio 0-300 bps (funds),500,0,1.0
+raw,dim_security,business rule: hard rule,sector blank only for ETFs,500,0,1.0
+raw,fact_fees,business rule: hard rule,amount > 0,122197,0,1.0
+raw,fact_fees,business rule: hard rule,aum_basis > 0,122197,0,1.0
+raw,fact_fees,business rule: hard rule,bps_charged 0-150 (hard cap; 01 WARNs above 100 as 'investigate'),122197,0,1.0
+raw,fact_fees,business rule: hard rule,fee_type in list,122197,0,1.0
+raw,fact_fees,business rule: hard rule,"fee_date is 1st of month, 2020-2024",122197,0,1.0
+raw,fact_fees,business rule: hard rule,amount = aum_basis x bps / 10000 / 12,122197,0,1.0
+raw,fact_portfolio_snapshot,business rule: hard rule,aum > 0,129547,0,1.0
+raw,fact_portfolio_snapshot,business rule: hard rule,cash_pct 0-1,129547,0,1.0
+raw,fact_portfolio_snapshot,business rule: hard rule,return_ytd numeric,129547,300,0.997684
+raw,fact_portfolio_snapshot,business rule: hard rule,benchmark_return_ytd -100% to +100%,129547,0,1.0
+raw,fact_portfolio_snapshot,business rule: hard rule,alpha = return - benchmark (tol 1e-05),129547,300,0.997684
+raw,fact_portfolio_snapshot,business rule: hard rule,year/month agree with snapshot_date,129547,0,1.0
+raw,fact_portfolio_snapshot,business rule: hard rule,account_type in list,129547,0,1.0
+raw,fact_portfolio_snapshot,business rule: known issue (flagged and kept),return_ytd -50% to +100%,129547,2934,0.977352
+raw,fact_portfolio_snapshot,business rule: known issue (flagged and kept),aum not floor value 1000,129547,420,0.996758
+raw,fact_transactions,business rule: hard rule,txn_type in list,298772,0,1.0
+raw,fact_transactions,business rule: hard rule,amount > 0,298772,0,1.0
+raw,fact_transactions,business rule: hard rule,shares > 0 (security txns),298772,836,0.997202
+raw,fact_transactions,business rule: hard rule,"price 0-10,000 (security txns)",298772,0,1.0
+raw,fact_transactions,business rule: hard rule,shares x price = amount,298772,836,0.997202
+raw,fact_transactions,business rule: hard rule,cash txns have blank security_id/shares/price,298772,0,1.0
+raw,fact_transactions,business rule: hard rule,txn_date 2020-01-01 to 2024-12-31,298772,0,1.0
+raw,fact_transactions,business rule: hard rule,txn_date on/after client_since,298772,0,1.0
+raw,fact_transactions,business rule: known issue (flagged and kept),"Buy/Sell on trading day (weekday, not NYSE holiday)",298772,44262,0.851854
+raw,fact_fees vs fact_portfolio_snapshot,cross-table reconciliation,"fee aum_basis = snapshot aum (same client, month)",122197,0,1.0
+raw,fact_fees vs dim_client,cross-table reconciliation,fact advisor_id = client's advisor_id (rows with a known client),122197,0,1.0
+raw,fact_portfolio_snapshot vs dim_client,cross-table reconciliation,fact advisor_id = client's advisor_id (rows with a known client),129547,0,1.0
+raw,fact_transactions vs dim_client,cross-table reconciliation,fact advisor_id = client's advisor_id (rows with a known client),298572,0,1.0
+raw,fact_transactions vs fact_fees,reconciliation coverage,fee client-months with no Advisory Fee txn,124130,93451,0.247152
+raw,fact_transactions vs fact_fees,reconciliation coverage,Advisory Fee txn client-months with no fee row,124130,1933,0.984428
+raw,fact_transactions vs fact_fees,cross-table reconciliation,Advisory Fee txn total = fact_fees total (client-month),28746,28729,0.000591
+raw,fact_transactions,recompute,recomputed shares x price = stored amount,197175,836,0.99576
+raw,fact_portfolio_snapshot,IQR outlier,"aum outside [-3,747,266.43, 6,926,558.87]",129547,13261,0.897636
+raw,fact_fees,IQR outlier,"amount outside [-1,924.66, 3,710.70]",122197,11341,0.907191
+raw,dim_client,IQR outlier,"initial_aum outside [-3,245,343.60, 6,023,140.45]",2525,253,0.899802
+raw,fact_transactions,IQR outlier,"amount [Advisory Fee] outside [-5,910.30, 10,992.07]",35766,4117,0.884891
+raw,fact_transactions,IQR outlier,"amount [Buy] outside [-99,055.67, 214,076.66]",83556,920,0.988989
+raw,fact_transactions,IQR outlier,"amount [Deposit] outside [-48,982.75, 150,444.13]",35981,0,1.0
+raw,fact_transactions,IQR outlier,"amount [Dividend] outside [-99,850.34, 215,596.21]",53864,551,0.989771
+raw,fact_transactions,IQR outlier,"amount [Sell] outside [-99,254.35, 214,169.27]",59755,672,0.988754
+raw,fact_transactions,IQR outlier,"amount [Withdrawal] outside [-49,646.23, 149,699.75]",29850,0,1.0
+clean,dim_advisor,business rule: hard rule,years_experience 0-50,25,0,1.0
+clean,dim_advisor,business rule: hard rule,aum_target_mm > 0,25,0,1.0
+clean,dim_advisor,business rule: hard rule,region in list,25,0,1.0
+clean,dim_benchmark,business rule: hard rule,name and ticker_proxy present,8,0,1.0
+clean,dim_benchmark,business rule: hard rule,ticker_proxy unique,8,0,1.0
+clean,dim_client,business rule: hard rule,state is USPS code,2500,0,1.0
+clean,dim_client,business rule: hard rule,zip 5 digits,2500,0,1.0
+clean,dim_client,business rule: hard rule,age 18-100,2500,0,1.0
+clean,dim_client,business rule: hard rule,risk_profile in list (or blank),2500,0,1.0
+clean,dim_client,business rule: known issue (flagged and kept),risk_profile present,2500,75,0.97
+clean,dim_client,business rule: hard rule,client_tier in list,2500,0,1.0
+clean,dim_client,business rule: hard rule,primary_account_type in list,2500,0,1.0
+clean,dim_client,business rule: hard rule,is_active True/False,2500,0,1.0
+clean,dim_client,business rule: hard rule,client_since 2000-01-01 to 2024-12-31,2500,0,1.0
+clean,dim_client,business rule: hard rule,initial_aum > 0,2500,0,1.0
+clean,dim_client,business rule: hard rule,tier matches AUM band,2500,0,1.0
+clean,dim_date,business rule: hard rule,date parses,1827,0,1.0
+clean,dim_date,business rule: hard rule,calendar fields agree with date,1827,0,1.0
+clean,dim_date,business rule: hard rule,month/quarter/year-end flags agree with date,1827,0,1.0
+clean,dim_date,business rule: hard rule,weekend not trading day,1827,0,1.0
+clean,dim_date,business rule: hard rule,NYSE holiday not trading day,1827,0,1.0
+clean,dim_security,business rule: hard rule,asset_class in list,500,0,1.0
+clean,dim_security,business rule: hard rule,is_etf True/False,500,0,1.0
+clean,dim_security,business rule: hard rule,ticker unique,500,0,1.0
+clean,dim_security,business rule: hard rule,expense_ratio 0-300 bps (funds),500,0,1.0
+clean,dim_security,business rule: hard rule,sector blank only for ETFs,500,0,1.0
+clean,fact_fees,business rule: hard rule,amount > 0,122197,0,1.0
+clean,fact_fees,business rule: hard rule,aum_basis > 0,122197,0,1.0
+clean,fact_fees,business rule: hard rule,bps_charged 0-150 (hard cap; 01 WARNs above 100 as 'investigate'),122197,0,1.0
+clean,fact_fees,business rule: hard rule,fee_type in list,122197,0,1.0
+clean,fact_fees,business rule: hard rule,"fee_date is 1st of month, 2020-2024",122197,0,1.0
+clean,fact_fees,business rule: hard rule,amount = aum_basis x bps / 10000 / 12,122197,0,1.0
+clean,fact_portfolio_snapshot,business rule: hard rule,aum > 0,129547,0,1.0
+clean,fact_portfolio_snapshot,business rule: hard rule,cash_pct 0-1,129547,0,1.0
+clean,fact_portfolio_snapshot,business rule: hard rule,return_ytd numeric,129547,0,1.0
+clean,fact_portfolio_snapshot,business rule: hard rule,benchmark_return_ytd -100% to +100%,129547,0,1.0
+clean,fact_portfolio_snapshot,business rule: hard rule,alpha = return - benchmark (tol 1e-05),129547,0,1.0
+clean,fact_portfolio_snapshot,business rule: hard rule,year/month agree with snapshot_date,129547,0,1.0
+clean,fact_portfolio_snapshot,business rule: hard rule,account_type in list,129547,0,1.0
+clean,fact_portfolio_snapshot,business rule: known issue (flagged and kept),return_ytd -50% to +100%,129547,2639,0.979629
+clean,fact_portfolio_snapshot,business rule: known issue (flagged and kept),aum not floor value 1000,129547,420,0.996758
+clean,fact_transactions,business rule: hard rule,txn_type in list,298572,0,1.0
+clean,fact_transactions,business rule: hard rule,amount > 0,298572,0,1.0
+clean,fact_transactions,business rule: hard rule,shares > 0 (security txns),298572,0,1.0
+clean,fact_transactions,business rule: hard rule,"price 0-10,000 (security txns)",298572,0,1.0
+clean,fact_transactions,business rule: hard rule,shares x price = amount,298572,0,1.0
+clean,fact_transactions,business rule: hard rule,cash txns have blank security_id/shares/price,298572,0,1.0
+clean,fact_transactions,business rule: hard rule,txn_date 2020-01-01 to 2024-12-31,298572,0,1.0
+clean,fact_transactions,business rule: hard rule,txn_date on/after client_since,298572,0,1.0
+clean,fact_transactions,business rule: known issue (flagged and kept),"Buy/Sell on trading day (weekday, not NYSE holiday)",298572,44241,0.851825
+clean,fact_fees vs fact_portfolio_snapshot,cross-table reconciliation,"fee aum_basis = snapshot aum (same client, month)",122197,0,1.0
+clean,fact_fees vs dim_client,cross-table reconciliation,fact advisor_id = client's advisor_id (rows with a known client),122197,0,1.0
+clean,fact_portfolio_snapshot vs dim_client,cross-table reconciliation,fact advisor_id = client's advisor_id (rows with a known client),129547,0,1.0
+clean,fact_transactions vs dim_client,cross-table reconciliation,fact advisor_id = client's advisor_id (rows with a known client),298572,0,1.0
+clean,fact_transactions vs fact_fees,reconciliation coverage,fee client-months with no Advisory Fee txn,124106,93451,0.247007
+clean,fact_transactions vs fact_fees,reconciliation coverage,Advisory Fee txn client-months with no fee row,124106,1909,0.984618
+clean,fact_transactions vs fact_fees,cross-table reconciliation,Advisory Fee txn total = fact_fees total (client-month),28746,28729,0.000591
+clean,fact_transactions,recompute,recomputed shares x price = stored amount,197044,0,1.0
+clean,fact_portfolio_snapshot,IQR outlier,"aum outside [-3,747,266.43, 6,926,558.87]",129547,13261,0.897636
+clean,fact_fees,IQR outlier,"amount outside [-1,924.66, 3,710.70]",122197,11341,0.907191
+clean,dim_client,IQR outlier,"initial_aum outside [-3,261,681.53, 6,054,838.50]",2500,251,0.8996
+clean,fact_transactions,IQR outlier,"amount [Advisory Fee] outside [-5,910.30, 10,992.07]",35742,4116,0.884841
+clean,fact_transactions,IQR outlier,"amount [Buy] outside [-99,051.65, 214,041.11]",83498,919,0.988994
+clean,fact_transactions,IQR outlier,"amount [Deposit] outside [-49,007.91, 150,451.32]",35956,0,1.0
+clean,fact_transactions,IQR outlier,"amount [Dividend] outside [-99,863.31, 215,617.36]",53826,551,0.989763
+clean,fact_transactions,IQR outlier,"amount [Sell] outside [-99,266.98, 214,200.12]",59720,671,0.988764
+clean,fact_transactions,IQR outlier,"amount [Withdrawal] outside [-49,661.27, 149,708.77]",29830,0,1.0

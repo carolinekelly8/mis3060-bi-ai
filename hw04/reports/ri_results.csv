@@ -1,0 +1,27 @@
+stage,relationship,rows,match_rate,orphan_rows,distinct_orphan_keys,null_key_rate
+raw,dim_client.advisor_id -> dim_advisor.advisor_id,2525,1.0,0,0,0.0
+raw,dim_security.benchmark_id -> dim_benchmark.benchmark_id,500,1.0,0,0,0.0
+raw,fact_fees.client_id -> dim_client.client_id,122197,1.0,0,0,0.0
+raw,fact_fees.advisor_id -> dim_advisor.advisor_id,122197,1.0,0,0,0.0
+raw,fact_portfolio_snapshot.client_id -> dim_client.client_id,129547,1.0,0,0,0.0
+raw,fact_portfolio_snapshot.advisor_id -> dim_advisor.advisor_id,129547,1.0,0,0,0.0
+raw,fact_portfolio_snapshot.benchmark_id -> dim_benchmark.benchmark_id,129547,1.0,0,0,0.0
+raw,fact_transactions.client_id -> dim_client.client_id,298772,0.999331,200,200,0.0
+raw,fact_transactions.advisor_id -> dim_advisor.advisor_id,298772,1.0,0,0,0.0
+raw,fact_transactions.security_id -> dim_security.security_id,298772,0.0,197175,500,0.340049
+raw,fact_fees.fee_date -> dim_date.date,122197,1.0,0,0,0.0
+raw,fact_portfolio_snapshot.snapshot_date -> dim_date.date,129547,1.0,0,0,0.0
+raw,fact_transactions.txn_date -> dim_date.date,298772,1.0,0,0,0.0
+clean,dim_client.advisor_id -> dim_advisor.advisor_id,2500,1.0,0,0,0.0
+clean,dim_security.benchmark_id -> dim_benchmark.benchmark_id,500,1.0,0,0,0.0
+clean,fact_fees.client_id -> dim_client.client_id,122197,1.0,0,0,0.0
+clean,fact_fees.advisor_id -> dim_advisor.advisor_id,122197,1.0,0,0,0.0
+clean,fact_portfolio_snapshot.client_id -> dim_client.client_id,129547,1.0,0,0,0.0
+clean,fact_portfolio_snapshot.advisor_id -> dim_advisor.advisor_id,129547,1.0,0,0,0.0
+clean,fact_portfolio_snapshot.benchmark_id -> dim_benchmark.benchmark_id,129547,1.0,0,0,0.0
+clean,fact_transactions.client_id -> dim_client.client_id,298572,1.0,0,0,0.0
+clean,fact_transactions.advisor_id -> dim_advisor.advisor_id,298572,1.0,0,0,0.0
+clean,fact_transactions.security_id -> dim_security.security_id,298572,1.0,0,0,0.340045
+clean,fact_fees.fee_date -> dim_date.date,122197,1.0,0,0,0.0
+clean,fact_portfolio_snapshot.snapshot_date -> dim_date.date,129547,1.0,0,0,0.0
+clean,fact_transactions.txn_date -> dim_date.date,298572,1.0,0,0,0.0
