@@ -1,0 +1,48 @@
+table,column,check_group,check,severity,count,pct_of_rows,example
+dim_client,state,1 column,state not a 2-letter USPS code,ERROR,78,3.089,"{'Pennsylvania': 25, 'Florida': 15, 'New York': 14, 'New Jersey': 13, 'California': 5, 'Illinois': 4, 'Texas': 2}"
+dim_client,client_id,2 single-table,near-duplicate clients (same age/zip/AUM/since/advisor),ERROR,50,1.98,"[['99', 'Terri', 'Jacobson'], ['2503', 'Terri', 'Jacobso'], ['1703', 'Catherine', 'Lopez'], ['2511', 'Catherine', 'Lope']]"
+dim_date,is_trading_day,2 single-table,NYSE market holiday marked as trading day,ERROR,47,2.573,"['2020-01-01', '2020-01-20', '2020-02-17', '2020-04-10']"
+fact_portfolio_snapshot,return_ytd,1 column,values failing numeric parse,ERROR,300,0.232,"['9.28%', '19.52%', '13.35%']"
+fact_portfolio_snapshot,return_ytd,1 column,"numeric column contains % / $ / , text",ERROR,300,0.232,
+fact_transactions,security_id,1 column,ID stored as float text (e.g. '45.0'),ERROR,197175,65.995,"['45.0', '174.0', '478.0']"
+fact_transactions,shares,1 column,negative shares,ERROR,836,0.28,txn_types {'Buy': 836}; 836 of 836 reconcile as |shares| x price == amount (sign error only)
+fact_transactions,client_id,3 referential,orphan FK -> dim_client.client_id (exact text match),ERROR,200,0.067,"['3191', '3017', '3058', '2974', '3131']"
+fact_transactions,security_id,3 referential,orphan FK -> dim_security.security_id (exact text match),ERROR,197175,65.995,"['45.0', '174.0', '478.0', '406.0', '484.0']"
+dim_advisor,certifications,1 column,null-like text token (e.g. 'None'),WARN,6,24.0,"CFA (6); None (6); CFP, CFA (6); CFP, CIMA (4); CFP (3)"
+dim_client,state,1 column,mixed formats (minority-format values),WARN,78,3.089,AA (2447); Aaaaaaaaaaaa (25); Aaaaaaa (15); Aaa Aaaa (14)
+dim_client,risk_profile,1 column,blank values,WARN,76,3.01,blank cells - decide if defect or legitimate
+dim_client,client_id,3 referential,"client with no fees, snapshots or transactions",WARN,25,0.99,"['2501', '2502', '2503', '2504', '2505']"
+dim_security,sector,1 column,blank values,WARN,219,43.8,blank cells - decide if defect or legitimate
+dim_security,expense_ratio_bps,1 column,blank values,WARN,281,56.2,blank cells - decide if defect or legitimate
+fact_fees,bps_charged,1 column,bps_charged > 100 (above typical fee schedule),WARN,1,0.001,['100.38']
+fact_portfolio_snapshot,return_ytd,1 column,mixed formats (minority-format values),WARN,300,0.232,9.999999 (74423); -9.999999 (41347); 9.99999 (7500); -9.99999 (4186)
+fact_portfolio_snapshot,aum,1 column,"aum exactly 1,000.00 (looks like a floor value)",WARN,420,0.324,92 clients
+fact_portfolio_snapshot,return_ytd,1 column,return_ytd > +100% or < -50% (implausible),WARN,2634,2.033,"min -0.993708, max 94.668215"
+fact_portfolio_snapshot,snapshot_date,4 cross-table,snapshot month with no fee charged,WARN,7350,5.674,
+fact_portfolio_snapshot,return_ytd,4 cross-table,return_ytd equals AUM / prior Dec AUM - 1 (not flow-adjusted: deposits/withdrawals count as return),WARN,104577,99.765,104577 of 104823 testable rows
+fact_transactions,security_id,1 column,blank values,WARN,101597,34.005,blank cells - decide if defect or legitimate
+fact_transactions,shares,1 column,blank values,WARN,101597,34.005,blank cells - decide if defect or legitimate
+fact_transactions,price,1 column,blank values,WARN,101597,34.005,blank cells - decide if defect or legitimate
+fact_transactions,txn_date,4 cross-table,inactive client transacting after last snapshot month,WARN,2410,0.807,
+fact_transactions,txn_date,4 cross-table,Buy/Sell on a non-trading day (dim_date: weekends),WARN,40649,13.605,
+fact_transactions,txn_date,4 cross-table,Buy/Sell on an NYSE market holiday (dim_date misses these),WARN,3613,1.209,
+fact_transactions,amount,4 cross-table,Advisory Fee transactions do not reconcile to fact_fees for same client-month,WARN,28729,99.941,"17 of 28746 overlapping client-months match; coverage: 93451 fee months have no Advisory Fee txn, 1933 txn months have no fee row"
+dim_advisor,advisor_id,1 column,primary key unique,INFO,0,0.0,25 distinct of 25
+dim_benchmark,benchmark_id,1 column,primary key unique,INFO,0,0.0,8 distinct of 8
+dim_benchmark,benchmark_id,3 referential,benchmark never referenced,INFO,1,12.5,['MSCI Emerging Markets']
+dim_client,client_id,1 column,primary key unique,INFO,0,0.0,2525 distinct of 2525
+dim_client,zip_code,1 column,zip with leading zero (must stay text),INFO,232,9.188,read as text so zeros are preserved
+dim_date,date_id,1 column,primary key unique,INFO,0,0.0,1827 distinct of 1827
+dim_security,security_id,1 column,primary key unique,INFO,0,0.0,500 distinct of 500
+dim_security,sector,2 single-table,sector blank only for ETFs (legitimate structure),INFO,219,43.8,
+dim_security,name,2 single-table,duplicate security names with different tickers,INFO,6,1.2,"['Jones Inc Fund', 'Davis PLC Fund', 'Graham Group Inc.']"
+dim_security,benchmark_id,4 cross-table,security benchmark asset class mapping,INFO,0,0.0,"{'1': {'Alternative': 0, 'Cash Equivalent': 0, 'Equity': 101, 'Fixed Income': 0}, '2': {'Alternative': 0, 'Cash Equivalent': 0, 'Equity': 0, 'Fixed Income': 120}, '3': {'Alternative': 58, 'Cash Equiva"
+fact_fees,fee_id,1 column,primary key unique,INFO,0,0.0,122197 distinct of 122197
+fact_fees,fee_type,2 single-table,fee_type changes month to month for the same client,INFO,2500,100.0,clients affected
+fact_portfolio_snapshot,snapshot_id,1 column,primary key unique,INFO,0,0.0,129547 distinct of 129547
+fact_portfolio_snapshot,benchmark_id,4 cross-table,"benchmark assigned by risk profile (1=Aggr/ModAggr, 3=Balanced, 8=Cons/ModCons); blank-risk clients all on 3",INFO,0,0.0,"{'1': {'': 0, 'Aggressive': 12505, 'Balanced': 0, 'Conservative': 0, 'Moderately Aggressive': 24023, 'Moderately Conservative': 0}, '3': {'': 3942, 'Aggressive': 0, 'Balanced': 38960, 'Conservative': "
+fact_transactions,txn_id,1 column,primary key unique,INFO,0,0.0,298772 distinct of 298772
+fact_transactions,txn_type,1 column,txn_type values,INFO,0,0.0,"{'Buy': 83556, 'Sell': 59755, 'Dividend': 53864, 'Deposit': 35981, 'Advisory Fee': 35766, 'Withdrawal': 29850}"
+fact_transactions,security_id,2 single-table,cash txn (deposit/withdrawal/fee) blank security - legitimate,INFO,101597,34.005,
+fact_transactions,amount,2 single-table,|shares| x price reconciles to amount,INFO,197175,100.0,197175 of 197175 security txns
+fact_transactions,security_id,3 referential,"orphans that DO match dim_security.security_id once '.0' is removed (format issue, fixable)",INFO,197175,65.995,197175 of 197175 resolved; 0 remain

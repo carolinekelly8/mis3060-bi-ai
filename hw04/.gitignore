@@ -1,0 +1,4 @@
+# The repo-level .gitignore excludes *.csv; this assignment must submit its CSVs.
+!*.csv
+!**/*.csv
+__pycache__/
