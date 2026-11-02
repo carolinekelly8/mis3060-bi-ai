@@ -1,0 +1,195 @@
+
+==============================================================================
+1. PROFILE
+==============================================================================
+pandas 3.0.6; data folder: C:\MIS3060\Wildcat Capital Clean
+
+dim_advisor  <- dim_advisor.csv: 25 rows x 7 cols  [OK]
+                  dtype  nulls  distinct
+advisor_id        int64      0        25
+first_name          str      0        24
+last_name           str      0        24
+region              str      0         5
+years_experience  int64      0        17
+aum_target_mm     int64      0         5
+certifications      str      6         4
+
+dim_benchmark  <- dim_benchmark (1).csv: 8 rows x 4 cols  [OK]
+              dtype  nulls  distinct
+benchmark_id  int64      0         8
+name            str      0         8
+asset_class     str      0         7
+ticker_proxy    str      0         8
+
+dim_client  <- dim_client.csv: 2,500 rows x 14 cols  [OK]
+                        dtype  nulls  distinct
+client_id               int64      0      2500
+first_name                str      0       505
+last_name                 str      0       755
+age                     int64      0        53
+city                      str      0      2291
+state                     str      0        20
+zip_code                int64      0      2483
+risk_profile              str      0         6
+client_tier               str      0         3
+primary_account_type      str      0         5
+initial_aum           float64      0      2500
+client_since              str      0      1651
+advisor_id              int64      0        25
+is_active                bool      0         2
+
+dim_date  <- dim_date (1).csv: 1,827 rows x 12 cols  [OK]
+                dtype  nulls  distinct
+date_id         int64      0      1827
+date              str      0      1827
+year            int64      0         5
+quarter         int64      0         4
+month           int64      0        12
+month_name        str      0        12
+week_of_year    int64      0        53
+day_of_week       str      0         7
+is_month_end    int64      0         2
+is_quarter_end  int64      0         2
+is_year_end     int64      0         2
+is_trading_day  int64      0         2
+
+dim_security  <- dim_security (1).csv: 500 rows x 8 cols  [OK]
+                     dtype  nulls  distinct
+security_id          int64      0       500
+ticker                 str      0       500
+name                   str      0       497
+asset_class            str      0         4
+sector                 str    219        11
+benchmark_id         int64      0         6
+is_etf                bool      0         2
+expense_ratio_bps  float64    281        82
+
+fact_fees  <- fact_fees.csv: 122,197 rows x 8 cols  [OK]
+               dtype  nulls  distinct
+fee_id         int64      0    122197
+client_id      int64      0      2500
+advisor_id     int64      0        25
+fee_date         str      0        60
+fee_type         str      0         4
+aum_basis    float64      0    121755
+bps_charged  float64      0      5217
+amount       float64      0     81649
+
+fact_portfolio_snapshot  <- fact_portfolio_snapshot.csv: 129,547 rows x 14 cols  [OK]
+                        dtype  nulls  distinct
+snapshot_id             int64      0    129547
+client_id               int64      0      2500
+advisor_id              int64      0        25
+benchmark_id            int64      0         3
+snapshot_date             str      0        60
+year                    int64      0         5
+month                   int64      0        12
+aum                   float64      0    129062
+return_ytd            float64      0    112165
+benchmark_return_ytd  float64      0       180
+active_alpha_ytd      float64      0     85397
+cash_pct              float64      0       701
+account_type              str      0         5
+is_return_suspect       int64      0         2
+
+fact_transactions  <- fact_transactions (1).csv: 298,572 rows x 10 cols  [OK]
+                         dtype   nulls  distinct
+txn_id                   int64       0    298572
+client_id                int64       0      2500
+advisor_id               int64       0        25
+security_id            float64  101528       500
+txn_date                   str       0      1826
+txn_type                   str       0         6
+shares                 float64  101528    193224
+price                  float64  101528     48104
+amount                 float64       0    292741
+is_post_departure_txn    int64       0         2
+
+==============================================================================
+2. PRIMARY KEYS (expected PK must be unique and non-blank)
+==============================================================================
+dim_advisor                advisor_id     duplicates=0  blanks=0  [OK]
+dim_benchmark              benchmark_id   duplicates=0  blanks=0  [OK]
+dim_client                 client_id      duplicates=0  blanks=0  [OK]
+dim_date                   date_id        duplicates=0  blanks=0  [OK]
+dim_security               security_id    duplicates=0  blanks=0  [OK]
+fact_fees                  fee_id         duplicates=0  blanks=0  [OK]
+fact_portfolio_snapshot    snapshot_id    duplicates=0  blanks=0  [OK]
+fact_transactions          txn_id         duplicates=0  blanks=0  [OK]
+dim_date (natural key)     date           duplicates=0  blanks=0
+
+==============================================================================
+3. FOREIGN KEYS (exact orphan count = non-blank values missing from parent)
+==============================================================================
+dim_client.advisor_id -> dim_advisor[advisor_id]: 0 orphans, 0 blanks  [OK]
+dim_security.benchmark_id -> dim_benchmark[benchmark_id]: 0 orphans, 0 blanks  [OK]
+fact_fees.client_id -> dim_client[client_id]: 0 orphans, 0 blanks  [OK]
+fact_fees.advisor_id -> dim_advisor[advisor_id]: 0 orphans, 0 blanks  [OK]
+fact_fees.fee_date -> dim_date[date]: 0 orphans, 0 blanks  [OK]
+fact_portfolio_snapshot.client_id -> dim_client[client_id]: 0 orphans, 0 blanks  [OK]
+fact_portfolio_snapshot.advisor_id -> dim_advisor[advisor_id]: 0 orphans, 0 blanks  [OK]
+fact_portfolio_snapshot.benchmark_id -> dim_benchmark[benchmark_id]: 0 orphans, 0 blanks  [OK]
+fact_portfolio_snapshot.snapshot_date -> dim_date[date]: 0 orphans, 0 blanks  [OK]
+fact_transactions.client_id -> dim_client[client_id]: 0 orphans, 0 blanks  [OK]
+fact_transactions.advisor_id -> dim_advisor[advisor_id]: 0 orphans, 0 blanks  [OK]
+fact_transactions.security_id -> dim_security[security_id]: 0 orphans, 101,528 blanks  [OK]
+fact_transactions.txn_date -> dim_date[date]: 0 orphans, 0 blanks  [OK]
+
+Fact dates vs dim_date[date_id] (shows date_id is NOT the join column):
+  fact_fees.fee_date: 0 of 122,197 rows match dim_date[date_id]
+  fact_portfolio_snapshot.snapshot_date: 0 of 129,547 rows match dim_date[date_id]
+  fact_transactions.txn_date: 0 of 298,572 rows match dim_date[date_id]
+
+==============================================================================
+4. GRAIN
+==============================================================================
+fact_fees duplicates on (client_id, fee_date): 0
+fact_fees max fee_type values per client-month: 1
+fact_portfolio_snapshot duplicates on (client_id, snapshot_date): 0
+fact_fees.fee_date: 122,197 of 122,197 rows dated the 1st
+fact_portfolio_snapshot.snapshot_date: 129,547 of 129,547 rows dated the 1st
+fact_transactions duplicates on every column except txn_id: 0
+fact_transactions rows sharing (client_id, txn_date, txn_type) with another row: 2,503
+
+==============================================================================
+5. SUPPORTING FACTS
+==============================================================================
+Blank security_id by txn_type:
+txn_type
+Deposit         35956
+Advisory Fee    35742
+Withdrawal      29830
+
+Rows with blank shares / price by txn_type:
+              shares  price
+txn_type                   
+Advisory Fee   35742  35742
+Buy                0      0
+Deposit        35956  35956
+Dividend           0      0
+Sell               0      0
+Withdrawal     29830  29830
+
+Fact advisor_id equals the client's advisor_id in dim_client:
+  fact_fees: 122,197 of 122,197 rows
+  fact_portfolio_snapshot: 129,547 of 129,547 rows
+  fact_transactions: 298,572 of 298,572 rows
+
+Flag counts:
+  fact_portfolio_snapshot.is_return_suspect: {0: 125672, 1: 3875}
+  fact_transactions.is_post_departure_txn: {0: 296162, 1: 2410}
+
+dim_security is_etf: {False: 281, True: 219}; blank expense_ratio_bps: 281 (all non-ETF: True)
+
+Negative amounts: fact_transactions=0, fact_fees=0
+
+Fee reconciliation (fact_fees vs Advisory Fee transactions):
+  fact_fees total amount:            $204,675,583.12
+  Advisory Fee transactions total:   $263,709,737.13
+  fee client-months with no Advisory Fee transaction: 93,451 of 122,197
+  client-months in both where amounts match to the cent: 0 of 28,746
+
+==============================================================================
+RESULT
+==============================================================================
+All checks passed.
